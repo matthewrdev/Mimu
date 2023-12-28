@@ -3,6 +3,8 @@ namespace Mits
 {
 	public static class Constants
     {
+        public const string LineBreak = "----------------------------------------------------------------------------";
+
         public const string XamlFileExtension = ".xaml";
         public const string CSharpFileExtension = ".cs";
 
@@ -15,6 +17,8 @@ namespace Mits
         };
 
         public const string ResourcesFolder = "Resources";
+
+        public const string ImagesFolder = "Images";
 
         public const string AppIconSetFolderExtension = ".appiconset";
         public const string ImageSetFolderExtension = ".imageset";

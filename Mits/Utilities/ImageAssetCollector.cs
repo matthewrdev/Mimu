@@ -5,7 +5,68 @@ namespace Mits.Utilities
 {
 	public static class ImageAssetCollector
 	{
-		public static IReadOnlyList<IImageAsset> CollectImageAssets(Project project)
+        public static IReadOnlyList<IImageAsset> CollectImageAssets(IReadOnlyList<Project> projects)
+        {
+            if (projects is null)
+            {
+                throw new ArgumentNullException(nameof(projects));
+            }
+
+            if (!projects.Any())
+            {
+                return Array.Empty<IImageAsset>();
+            }
+
+            Dictionary<string, List<ImageAsset>> groups = new Dictionary<string, List<ImageAsset>>();
+
+            foreach (var project in projects)
+            {
+                var images = CollectImageAssets(project);
+                if (!images.Any())
+                {
+                    continue;
+                }
+
+                foreach (var image in images)
+                {
+                    var imageName = Path.GetFileNameWithoutExtension(image.Name);
+
+                    if (!groups.ContainsKey(imageName))
+                    {
+                        groups[imageName] = new List<ImageAsset>();
+                    }
+
+                    if (image is ImageAsset imageAsset)
+                    {
+                        groups[imageName].Add(imageAsset);
+                    }
+                    else if (image is ImageAssetGroup imageAssetGroup)
+                    {
+                        groups[imageName].AddRange(imageAssetGroup.ImageAssets);
+                    }
+                }
+            }
+
+            List<IImageAsset> imageAssets = new List<IImageAsset>();
+
+
+            foreach (var g in groups)
+            {
+                if (g.Value.Count == 1)
+                {
+                    imageAssets.Add(g.Value.First());
+                }
+                else
+                {
+                    imageAssets.Add(new ImageAssetGroup(g.Key, g.Value));
+                }
+            }
+
+            return imageAssets;
+
+        }
+
+        public static IReadOnlyList<IImageAsset> CollectImageAssets(Project project)
 		{
             if (project is null)
             {
@@ -81,7 +142,7 @@ namespace Mits.Utilities
                 }
                 else
                 {
-                    imageAssets.Add(new ImageAssetGroup(g.Key, g.Value, project));
+                    imageAssets.Add(new ImageAssetGroup(g.Key, g.Value));
                 }
             }
 
@@ -163,7 +224,7 @@ namespace Mits.Utilities
                     }
                     else
                     {
-                        imageAssets.Add(new ImageAssetGroup(g.Key, g.Value, project));
+                        imageAssets.Add(new ImageAssetGroup(g.Key, g.Value));
                     }
                 }
             }
@@ -222,8 +283,7 @@ namespace Mits.Utilities
             var assets = images.Select(i => new ImageAsset(Path.GetFileNameWithoutExtension(i.Name), i.FullName, i.Extension, project)).ToList();
 
             return new ImageAssetGroup(imageName,
-                                       assets,
-                                       project);
+                                       assets);
 
 
         }
@@ -273,7 +333,7 @@ namespace Mits.Utilities
                 }
                 else
                 {
-                    imageAssets.Add(new ImageAssetGroup(g.Key, g.Value, project));
+                    imageAssets.Add(new ImageAssetGroup(g.Key, g.Value));
                 }
             }
 

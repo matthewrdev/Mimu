@@ -3,12 +3,14 @@ using Mits.Models;
 using System.Collections.Generic;
 using Mits.Utilities;
 using System.Drawing;
+using FileRenamer;
 
 namespace Mits.Models
 {
     public class ImageAssetGroup : IImageAsset
 	{
-        public ImageAssetGroup(string name, IReadOnlyList<ImageAsset> imageAssets, Project project)
+        public ImageAssetGroup(string name,
+                               IReadOnlyList<ImageAsset> imageAssets)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -16,18 +18,20 @@ namespace Mits.Models
             }
 
             Name = name;
-
-            TopLevelImage = ImageSizeHelper.GetTopLevelImage(imageAssets, project);
+            CompatName = ImageNameCompatibilityHelper.ConvertToCompatibleName(name, out _);
+            TopLevelImage = ImageSizeHelper.GetTopLevelImage(imageAssets);
             ImageAssets = imageAssets ?? throw new ArgumentNullException(nameof(imageAssets));
-            Project = project ?? throw new ArgumentNullException(nameof(project));
             Extension = Path.GetExtension(TopLevelImage.FilePath);
+            Projects = ImageAssets.Select(i => i.Project).Distinct().ToList();
         }
 
 		public string Name { get; }
 
 		public IReadOnlyList<ImageAsset> ImageAssets { get; }
 
-        public Project Project { get; }
+        public IReadOnlyList<Project> Projects { get; }
+
+        public Project Project => TopLevelImage.Project;
         public ImageAsset TopLevelImage { get; }
 
         public string FilePath => TopLevelImage.FilePath;
@@ -35,6 +39,8 @@ namespace Mits.Models
         public string Extension { get; }
 
         public Size Size => TopLevelImage.Size;
+
+        public string CompatName { get; }
 
         public override string ToString()
         {

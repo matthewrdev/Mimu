@@ -24,7 +24,7 @@ namespace Mits.Models
 
         public override string ToString()
         {
-            return Name + $" ({ProjectKind})";
+            return Name + $" ({ProjectKind}) at '{FilePath}'";
         }
     }
 }

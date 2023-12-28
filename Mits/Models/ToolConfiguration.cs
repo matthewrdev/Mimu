@@ -1,6 +1,7 @@
 ﻿using System;
 using Mits.Models;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Mits.Models
 {
@@ -9,26 +10,27 @@ namespace Mits.Models
         public ToolConfiguration(string toolName,
                                  string source,
                                  string destination,
-                                 ImageReferenceRules ruleset,
+                                 ImageReferenceConfiguration ruleset,
                                  IReadOnlyList<string> excluded,
                                  bool dryRun)
         {
             ToolName = toolName;
             Source = source;
             Destination = destination;
-            Ruleset = ruleset ?? ImageReferenceRules.Default;
-            Excluded = excluded ?? Array.Empty<string>();
+            Ruleset = ruleset ?? ImageReferenceConfiguration.Default;
+            Excluded = ImmutableHashSet.Create((excluded ?? Array.Empty<string>()).ToArray());
             DryRun = dryRun;
         }
 
         public string ToolName { get; }
+
         public string Source { get; }
 
 		public string Destination { get; }
 
-		public ImageReferenceRules Ruleset { get; }
+		public ImageReferenceConfiguration Ruleset { get; }
 
-		public IReadOnlyList<string> Excluded { get; }
+		public ImmutableHashSet<string> Excluded { get; }
 
 		public bool DryRun { get; }
 	}

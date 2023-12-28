@@ -25,7 +25,7 @@ namespace Mits.Utilities
             return project.ProjectKind == ProjectKind.Maui;
         }
 
-        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(IReadOnlyList<Project> projects, bool searchCSharp, bool searchXaml, ImageReferenceRules rules = null)
+        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(IReadOnlyList<Project> projects, bool searchCSharp, bool searchXaml, ImageReferenceConfiguration rules = null)
         {
             if (projects is null)
             {
@@ -37,7 +37,7 @@ namespace Mits.Utilities
                 return ImmutableDictionary<string, IReadOnlyList<ImageReference>>.Empty;
             }
 
-            rules ??= ImageReferenceRules.Default;
+            rules ??= ImageReferenceConfiguration.Default;
 
             Dictionary<string, List<ImageReference>> references = new Dictionary<string, List<ImageReference>>();
 
@@ -49,7 +49,7 @@ namespace Mits.Utilities
             return references.ToDictionary(kp => kp.Key, kp => (IReadOnlyList<ImageReference>)kp.Value);
         }
 
-        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(Project project, bool searchCSharp, bool searchXaml, ImageReferenceRules rules = null)
+        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(Project project, bool searchCSharp, bool searchXaml, ImageReferenceConfiguration rules = null)
         {
             if (project is null)
             {
@@ -66,7 +66,7 @@ namespace Mits.Utilities
                 return ImmutableDictionary<string, IReadOnlyList<ImageReference>>.Empty;
             }
 
-            rules ??= ImageReferenceRules.Default;
+            rules ??= ImageReferenceConfiguration.Default;
 
             var projectFolder = project.Folder;
             var extensions = GetFileExtensionsForSearch(searchCSharp, searchXaml);
@@ -91,7 +91,7 @@ namespace Mits.Utilities
             return references;
         }
 
-        public static IReadOnlyList<ImageReference> FindReferences(FileInfo fileInfo, Project project, ImageReferenceRules rules = null)
+        public static IReadOnlyList<ImageReference> FindReferences(FileInfo fileInfo, Project project, ImageReferenceConfiguration rules = null)
         {
             if (fileInfo is null)
             {
@@ -103,7 +103,7 @@ namespace Mits.Utilities
                 throw new ArgumentNullException(nameof(project));
             }
 
-            rules ??= ImageReferenceRules.Default;
+            rules ??= ImageReferenceConfiguration.Default;
 
             var fileContents = File.ReadAllText(fileInfo.FullName);
 
@@ -124,7 +124,7 @@ namespace Mits.Utilities
             Building,
         }
 
-        public static IReadOnlyList<ImageReference> FindStringReferences(string contents, string filePath, Project project, ImageReferenceRules rules = null)
+        public static IReadOnlyList<ImageReference> FindStringReferences(string contents, string filePath, Project project, ImageReferenceConfiguration rules = null)
         {
             if (string.IsNullOrEmpty(contents))
             {
@@ -141,7 +141,7 @@ namespace Mits.Utilities
                 throw new ArgumentNullException(nameof(project));
             }
 
-            rules ??= ImageReferenceRules.Default;
+            rules ??= ImageReferenceConfiguration.Default;
 
             List<ImageReference> references = new List<ImageReference>();
 
@@ -224,10 +224,10 @@ namespace Mits.Utilities
                                                     int currentSpanEnd,
                                                     string filePath,
                                                     Project project,
-                                                    ImageReferenceRules rules,
+                                                    ImageReferenceConfiguration rules,
                                                     out ImageReference imageReference)
         {
-            rules ??= ImageReferenceRules.Default;
+            rules ??= ImageReferenceConfiguration.Default;
             imageReference = null;
             if (string.IsNullOrWhiteSpace(value))
             {

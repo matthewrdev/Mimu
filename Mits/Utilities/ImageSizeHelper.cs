@@ -28,16 +28,11 @@ namespace Mits.Utilities
             }
         }
 
-        internal static ImageAsset GetTopLevelImage(IReadOnlyList<ImageAsset> imageAssets, Project project)
+        public static ImageAsset GetTopLevelImage(IReadOnlyList<ImageAsset> imageAssets)
         {
             if (imageAssets is null)
             {
                 throw new ArgumentNullException(nameof(imageAssets));
-            }
-
-            if (project is null)
-            {
-                throw new ArgumentNullException(nameof(project));
             }
 
             // Assumes images are same aspect and uses a width-dominent size preference rather than the specific sizing per platform.

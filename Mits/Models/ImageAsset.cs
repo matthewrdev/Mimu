@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using FileRenamer;
 using Mits.Models;
 using Mits.Utilities;
 
@@ -28,6 +29,7 @@ namespace Mits.Models
             }
 
             Name = name;
+            CompatName = ImageNameCompatibilityHelper.ConvertToCompatibleName(name, out _);
             FilePath = filePath;
             Extension = extension;
             Project = project ?? throw new ArgumentNullException(nameof(project));
@@ -40,6 +42,8 @@ namespace Mits.Models
         public string Extension { get; }
         public Project Project { get; }
         public Size Size { get; }
+
+        public string CompatName { get; }
 
         public override string ToString()
         {

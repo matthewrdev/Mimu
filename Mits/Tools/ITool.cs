@@ -9,6 +9,8 @@ namespace Mits.Tools
 
 		string Help { get; }
 
+		// TODO: Configuratoin object?
+
 		void Run(ToolConfiguration config);
 	}
 }

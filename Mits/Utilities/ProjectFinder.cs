@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Mits.Models;
 
 namespace Mits.Utilities
@@ -15,14 +16,25 @@ namespace Mits.Utilities
             "obj",
         };
 
-        public static List<Project> FindAllProjects(string sourceDirectory)
+        public static List<Project> FindAllProjects(string sourcePath)
         {
             List<Project> projects = new List<Project>();
+
+            if (File.Exists(sourcePath))
+            {
+                if (Path.GetExtension(sourcePath) == Constants.ProjectFileExtension)
+                {
+                    var projectKind = GetProjectFileKind(sourcePath);
+                    projects.Add(new Project(new FileInfo(sourcePath), projectKind));
+                }
+
+                return projects;
+            }
 
             try
             {
                 bool searchChildren = true;
-                foreach (string filePath in Directory.GetFiles(sourceDirectory))
+                foreach (string filePath in Directory.GetFiles(sourcePath))
                 {
                     var fileInfo = new FileInfo(filePath);
 
@@ -36,7 +48,7 @@ namespace Mits.Utilities
 
                 if (searchChildren)
                 {
-                    foreach (string childDirectory in Directory.GetDirectories(sourceDirectory))
+                    foreach (string childDirectory in Directory.GetDirectories(sourcePath))
                     {
                         var directoryInfo = new DirectoryInfo(childDirectory);
                         if (excludedDirectories.Contains(directoryInfo.Name.ToLowerInvariant()))
