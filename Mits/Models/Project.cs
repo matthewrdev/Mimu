@@ -21,6 +21,11 @@ namespace Mits.Models
 		public string Name => FileInfo.Name;
 
         public string Folder => FileInfo.Directory.FullName;
+
+        public override string ToString()
+        {
+            return Name + $" ({ProjectKind})";
+        }
     }
 }
 

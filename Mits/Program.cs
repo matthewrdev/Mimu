@@ -5,8 +5,14 @@ using Mits.Models;
 using Mits.Utilities;
 
 
-var folderPath = "source path here";
+var projects = ProjectFinder.FindAllProjects("/Users/matthewrobbins/Development/git/TestApp");
 
+foreach (var project in projects)
+{
+    var iamges = ImageAssetCollector.CollectImageAssets(project);
+}
+
+var folderPath = "";
 
 var images = Directory.GetFiles(folderPath, "*.png");
 

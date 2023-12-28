@@ -35,7 +35,7 @@ namespace Mits.Utilities
 
             var resourcesFolder = Path.Combine(project.Folder, "Resources");
 
-            if (Directory.Exists(resourcesFolder))
+            if (!Directory.Exists(resourcesFolder))
             {
                 return Array.Empty<IImageAsset>();
             }
@@ -244,15 +244,40 @@ namespace Mits.Utilities
 
             var images = FileFinder.FindAllFiles(resourcesFolder, Constants.ImageFileExtensions);
 
-            var directories =
 
-            var drawableFolders = new List<string>();
-            var mipmapFolders = new List<string>();
+            List<IImageAsset> imageAssets = new List<IImageAsset>();
+            Dictionary<string, List<ImageAsset>> groups = new Dictionary<string, List<ImageAsset>>();
 
+            foreach (var image in images)
+            {
+                var imageName = Path.GetFileNameWithoutExtension(image.Name);
 
-            // Get all images under the Resources/ path.
+                if (imageName.Contains("@"))
+                {
+                    imageName = imageName.Split("@").First();
+                }
 
-            return Array.Empty<IImageAsset>();
+                if (!groups.ContainsKey(imageName))
+                {
+                    groups[imageName] = new List<ImageAsset>();
+                }
+
+                groups[imageName].Add(new ImageAsset(imageName, image.FullName, image.Extension, project));
+            }
+
+            foreach (var g in groups)
+            {
+                if (g.Value.Count == 1)
+                {
+                    imageAssets.Add(g.Value.First());
+                }
+                else
+                {
+                    imageAssets.Add(new ImageAssetGroup(g.Key, g.Value, project));
+                }
+            }
+
+            return imageAssets;
         }
     }
 }

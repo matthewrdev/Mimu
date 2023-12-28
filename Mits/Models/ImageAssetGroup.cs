@@ -2,6 +2,7 @@
 using Mits.Models;
 using System.Collections.Generic;
 using Mits.Utilities;
+using System.Drawing;
 
 namespace Mits.Models
 {
@@ -32,6 +33,13 @@ namespace Mits.Models
         public string FilePath => TopLevelImage.FilePath;
 
         public string Extension { get; }
+
+        public Size Size => TopLevelImage.Size;
+
+        public override string ToString()
+        {
+            return Name + Extension + " group in " + Project.Name + $"({ImageAssets.Count} values)" + $" ({Size.Width}w {Size.Height}h)";
+        }
     }
 }
 

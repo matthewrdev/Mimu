@@ -24,6 +24,12 @@ namespace Mits
         public const string DrawableFolderPrefix = "drawable";
 
         public const string MipMapFolderPrefix = "mipmap";
+
+        public const string MauiProjectFileMarker = "<UseMaui>true</UseMaui>";
+        public const string XamarinIOSFileMarker = "<Import Project=\"$(MSBuildExtensionsPath)\\Xamarin\\iOS\\Xamarin.iOS.CSharp.targets\" />";
+        public const string XamarinAndroidFileMarker = "<Import Project=\"$(MSBuildExtensionsPath)\\Xamarin\\Android\\Xamarin.Android.CSharp.targets\" />";
+
+        public const string ProjectFileExtension = ".csproj";
     }
 }
 

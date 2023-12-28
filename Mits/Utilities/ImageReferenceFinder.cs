@@ -25,7 +25,7 @@ namespace Mits.Utilities
             return project.ProjectKind == ProjectKind.Maui;
         }
 
-        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(IReadOnlyList<Project> projects, bool searchCSharp, bool searchXaml)
+        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(IReadOnlyList<Project> projects, bool searchCSharp, bool searchXaml, ImageReferenceRules rules = null)
         {
             if (projects is null)
             {
@@ -37,17 +37,19 @@ namespace Mits.Utilities
                 return ImmutableDictionary<string, IReadOnlyList<ImageReference>>.Empty;
             }
 
+            rules ??= ImageReferenceRules.Default;
+
             Dictionary<string, List<ImageReference>> references = new Dictionary<string, List<ImageReference>>();
 
             foreach (var project in projects)
             {
-                var result = FindReferences(project, searchCSharp, searchXaml);
+                var result = FindReferences(project, searchCSharp, searchXaml, rules);
             }
 
             return references.ToDictionary(kp => kp.Key, kp => (IReadOnlyList<ImageReference>)kp.Value);
         }
 
-        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(Project project, bool searchCSharp, bool searchXaml)
+        public static IReadOnlyDictionary<string, IReadOnlyList<ImageReference>> FindReferences(Project project, bool searchCSharp, bool searchXaml, ImageReferenceRules rules = null)
         {
             if (project is null)
             {
@@ -64,6 +66,8 @@ namespace Mits.Utilities
                 return ImmutableDictionary<string, IReadOnlyList<ImageReference>>.Empty;
             }
 
+            rules ??= ImageReferenceRules.Default;
+
             var projectFolder = project.Folder;
             var extensions = GetFileExtensionsForSearch(searchCSharp, searchXaml);
 
@@ -76,7 +80,7 @@ namespace Mits.Utilities
             Dictionary<string, IReadOnlyList<ImageReference>> references = new Dictionary<string, IReadOnlyList<ImageReference>>();
             foreach (var file in files)
             {
-                IReadOnlyList<ImageReference> fileReferences = FindReferences(file, project);
+                IReadOnlyList<ImageReference> fileReferences = FindReferences(file, project, rules);
 
                 if (fileReferences != null && fileReferences.Any())
                 {
@@ -87,7 +91,7 @@ namespace Mits.Utilities
             return references;
         }
 
-        public static IReadOnlyList<ImageReference> FindReferences(FileInfo fileInfo, Project project)
+        public static IReadOnlyList<ImageReference> FindReferences(FileInfo fileInfo, Project project, ImageReferenceRules rules = null)
         {
             if (fileInfo is null)
             {
@@ -99,9 +103,11 @@ namespace Mits.Utilities
                 throw new ArgumentNullException(nameof(project));
             }
 
+            rules ??= ImageReferenceRules.Default;
+
             var fileContents = File.ReadAllText(fileInfo.FullName);
 
-            return FindStringReferences(fileContents, fileInfo.FullName, project);
+            return FindStringReferences(fileContents, fileInfo.FullName, project, rules);
 
         }
 
@@ -118,7 +124,7 @@ namespace Mits.Utilities
             Building,
         }
 
-        public static IReadOnlyList<ImageReference> FindStringReferences(string contents, string filePath, Project project)
+        public static IReadOnlyList<ImageReference> FindStringReferences(string contents, string filePath, Project project, ImageReferenceRules rules = null)
         {
             if (string.IsNullOrEmpty(contents))
             {
@@ -134,6 +140,8 @@ namespace Mits.Utilities
             {
                 throw new ArgumentNullException(nameof(project));
             }
+
+            rules ??= ImageReferenceRules.Default;
 
             List<ImageReference> references = new List<ImageReference>();
 
@@ -173,7 +181,7 @@ namespace Mits.Utilities
 
                 if (shouldCloseValue)
                 {
-                    if (TryParseToImageReference(currentValueBuffer, i, filePath, project, out var imageReference))
+                    if (TryParseToImageReference(currentValueBuffer, i, filePath, project, rules, out var imageReference))
                     {
                         references.Add(imageReference);
                     }
@@ -212,8 +220,14 @@ namespace Mits.Utilities
 
 
 
-        public static bool TryParseToImageReference(string value, int currentSpanEnd, string filePath,  Project project, out ImageReference imageReference)
+        public static bool TryParseToImageReference(string value,
+                                                    int currentSpanEnd,
+                                                    string filePath,
+                                                    Project project,
+                                                    ImageReferenceRules rules,
+                                                    out ImageReference imageReference)
         {
+            rules ??= ImageReferenceRules.Default;
             imageReference = null;
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -225,7 +239,12 @@ namespace Mits.Utilities
                 return false;
             }
 
-            if (ContainsStringFormatting(value))
+            if (ContainsStringFormatting(value) && rules.IgnoreFormattedStrings)
+            {
+                return false;
+            }
+
+            if (Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out _) && rules.IgnoreUrls)
             {
                 return false;
             }

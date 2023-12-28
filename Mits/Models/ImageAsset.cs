@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using Mits.Models;
+using Mits.Utilities;
 
 namespace Mits.Models
 {
@@ -29,6 +31,7 @@ namespace Mits.Models
             FilePath = filePath;
             Extension = extension;
             Project = project ?? throw new ArgumentNullException(nameof(project));
+            Size = ImageSizeHelper.GetImageSize(FilePath);
         }
 
 		public string Name { get; }
@@ -36,6 +39,12 @@ namespace Mits.Models
 		public string FilePath { get; }
         public string Extension { get; }
         public Project Project { get; }
+        public Size Size { get; }
+
+        public override string ToString()
+        {
+            return Name + Extension + " in " + Project.Name + $" ({Size.Width}w {Size.Height}h)";
+        }
     }
 }
 

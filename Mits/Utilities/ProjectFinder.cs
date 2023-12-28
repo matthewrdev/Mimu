@@ -15,12 +15,6 @@ namespace Mits.Utilities
             "obj",
         };
 
-        private const string mauiProjectFileMarker = "<UseMaui>true</UseMaui>";
-        private const string xamarinIOSFileMarker = "<Import Project=\"$(MSBuildExtensionsPath)\\Xamarin\\iOS\\Xamarin.iOS.CSharp.targets\" />";
-        private const string xamarinAndroidFileMarker = "<Import Project=\"$(MSBuildExtensionsPath)\\Xamarin\\Android\\Xamarin.Android.CSharp.targets\" />";
-
-        public const string ProjectFileExtension = "csproj";
-
         public static List<Project> FindAllProjects(string sourceDirectory)
         {
             List<Project> projects = new List<Project>();
@@ -32,7 +26,7 @@ namespace Mits.Utilities
                 {
                     var fileInfo = new FileInfo(filePath);
 
-                    if (fileInfo.Extension == ProjectFileExtension)
+                    if (fileInfo.Extension == Constants.ProjectFileExtension)
                     {
                         searchChildren = false;
                         var projectKind = GetProjectFileKind(filePath);
@@ -80,22 +74,22 @@ namespace Mits.Utilities
             }
 
             var fileInfo = new FileInfo(projectFilePath);
-            if (fileInfo.Extension != ProjectFileExtension)
+            if (fileInfo.Extension != Constants.ProjectFileExtension)
             {
-                throw new ArgumentException($"'{nameof(projectFilePath)}' is not a dotnet project file (the file extension must be '.{ProjectFileExtension}').", nameof(projectFilePath));
+                throw new ArgumentException($"'{nameof(projectFilePath)}' is not a dotnet project file (the file extension must be '{Constants.ProjectFileExtension}').", nameof(projectFilePath));
             }
 
             var contents = File.ReadAllText(fileInfo.FullName);
 
-            if (contents.Contains(mauiProjectFileMarker, StringComparison.InvariantCultureIgnoreCase))
+            if (contents.Contains(Constants.MauiProjectFileMarker, StringComparison.InvariantCultureIgnoreCase))
             {
                 return ProjectKind.Maui;
             }
-            else if (contents.Contains(xamarinIOSFileMarker, StringComparison.InvariantCultureIgnoreCase))
+            else if (contents.Contains(Constants.XamarinIOSFileMarker, StringComparison.InvariantCultureIgnoreCase))
             {
                 return ProjectKind.XamariniOS;
             }
-            else if (contents.Contains(xamarinAndroidFileMarker, StringComparison.InvariantCultureIgnoreCase))
+            else if (contents.Contains(Constants.XamarinAndroidFileMarker, StringComparison.InvariantCultureIgnoreCase))
             {
                 return ProjectKind.XamarinAndroid;
             }

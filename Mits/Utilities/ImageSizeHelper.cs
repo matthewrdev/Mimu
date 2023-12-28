@@ -42,7 +42,7 @@ namespace Mits.Utilities
 
             // Assumes images are same aspect and uses a width-dominent size preference rather than the specific sizing per platform.
             // Good enough for v1 I guess!s
-            return imageAssets.OrderByDescending(i => GetImageSize(i.FilePath).Width).FirstOrDefault();
+            return imageAssets.OrderByDescending(i => i.Size.Width).FirstOrDefault();
         }
     }
 }
