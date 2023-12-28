@@ -7,7 +7,9 @@ namespace Mits.Tools
 	{
 		string Name { get; }
 
-		void Run(IReadOnlyList<Project> projects);
+		string Help { get; }
+
+		void Run(ToolConfiguration config);
 	}
 }
 

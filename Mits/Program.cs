@@ -1,9 +1,13 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Diagnostics;
 using FileRenamer;
+using Mits;
 using Mits.Models;
 using Mits.Utilities;
 
+var tools = ToolsHelper.BuildTools();
+
+var configuration = Options.OptionsToToolConfiguration(args.ToList());
 
 var projects = ProjectFinder.FindAllProjects("/Users/matthewrobbins/Development/git/TestApp");
 
