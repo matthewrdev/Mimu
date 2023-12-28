@@ -39,7 +39,7 @@ namespace Mits.Tools
             log.Info("Discovered the following projects as the DESTINATIONS for image migration:");
             foreach (var project in destinationProjects)
             {
-                var isIgnored = project.ProjectKind == ProjectKind.Maui || project.ProjectKind == ProjectKind.Other;
+                var isIgnored = project.ProjectKind != ProjectKind.Maui;
                 log.Info(" => " + project.ToString() + (isIgnored ? " [IGNORED]" : ""));
             }
 
@@ -51,7 +51,7 @@ namespace Mits.Tools
             foreach (var image in sourceImages)
             {
                 var isExcluded = config.Excluded.Contains(image.Name);
-                log.Info(" => " + (isExcluded ? "[EXCLUDED]" : "") + image + " | CompatName=" + image.CompatName);
+                log.Info(" => " + (isExcluded ? "[EXCLUDED]" : "") + image + " | CompatName=" + image.CompatName + image.Extension);
 
                 foreach (var destination in destinationProjects.Where(d => d.ProjectKind == ProjectKind.Maui))
                 {
@@ -64,6 +64,9 @@ namespace Mits.Tools
             {
                 return;
             }
+
+
+            log.Info("Copying image assets...");
         }
 
         private bool Validate(ToolConfiguration config)

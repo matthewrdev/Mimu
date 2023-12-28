@@ -9,8 +9,6 @@ namespace Mits.Utilities
 		{
 			return new List<ITool>()
 			{
-				new DetectMissingImagesTool(),
-				new DetectUnusedImagesTool(),
 				new FixImageReferencesTool(),
 				new MigrateImagesTool(),
 				new RenameImagesTool(),
