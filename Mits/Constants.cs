@@ -34,6 +34,8 @@ namespace Mits
         public const string XamarinAndroidFileMarker = "<Import Project=\"$(MSBuildExtensionsPath)\\Xamarin\\Android\\Xamarin.Android.CSharp.targets\" />";
 
         public const string ProjectFileExtension = ".csproj";
+
+
     }
 }
 

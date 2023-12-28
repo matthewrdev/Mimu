@@ -12,7 +12,10 @@ namespace Mits.Models
                                  string destination,
                                  ImageReferenceConfiguration ruleset,
                                  IReadOnlyList<string> excluded,
-                                 bool dryRun)
+                                 bool dryRun,
+                                 bool overWrite,
+                                 ImageNumericBehaviour numericSufixBehaviour,
+                                 ImageNumericBehaviour numericPrefixBehaviour)
         {
             ToolName = toolName;
             Source = source;
@@ -20,6 +23,9 @@ namespace Mits.Models
             Ruleset = ruleset ?? ImageReferenceConfiguration.Default;
             Excluded = ImmutableHashSet.Create((excluded ?? Array.Empty<string>()).ToArray());
             DryRun = dryRun;
+            OverWrite = overWrite;
+            NumericSuffixBehaviour = numericSufixBehaviour;
+            NumericPrefixBehaviour = numericPrefixBehaviour;
         }
 
         public string ToolName { get; }
@@ -33,6 +39,12 @@ namespace Mits.Models
 		public ImmutableHashSet<string> Excluded { get; }
 
 		public bool DryRun { get; }
-	}
+
+        public bool OverWrite { get; }
+
+        public ImageNumericBehaviour NumericSuffixBehaviour { get; }
+
+        public ImageNumericBehaviour NumericPrefixBehaviour { get; }
+    }
 }
 

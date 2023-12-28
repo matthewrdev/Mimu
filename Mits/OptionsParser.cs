@@ -26,11 +26,22 @@ namespace Mits
             var ruleSetFile = GetOptionValue(Options.RuleSet, args);
             var excluded = GetOptionValue(Options.Excluded, args);
             var isDryRun = args.Contains(Options.DryRun);
+            var overwrite = args.Contains(Options.Overwrite);
+            var suffixBehaviour = GetOptionValue(Options.NumericSuffixBehaviour, args);
+            var prefixBehaviour = GetOptionValue(Options.NumericPrefixBehaviour, args);
 
             var ruleSet = LoadRuleSet(ruleSetFile);
             var excludedFiles = LoadExcludedFiles(excluded);
 
-            return new ToolConfiguration(tool, source, destination, ruleSet, excludedFiles, isDryRun);
+            return new ToolConfiguration(tool,
+                                         source,
+                                         destination,
+                                         ruleSet,
+                                         excludedFiles,
+                                         isDryRun,
+                                         overwrite,
+                                         suffixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
+                                         prefixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend);
         }
 
         private static IReadOnlyList<string> LoadExcludedFiles(string excluded)

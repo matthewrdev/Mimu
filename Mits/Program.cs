@@ -1,14 +1,9 @@
-﻿// See https://aka.ms/new-console-template for more information
-using System.Diagnostics;
-using FileRenamer;
+﻿using FileRenamer;
 using Mits;
 using Mits.Logging;
-using Mits.Models;
 using Mits.Utilities;
 
 Logger.Instance.Factory = new ConsoleLoggerFactory();
-
-var log = Logger.Create();
 
 var tools = ToolsHelper.BuildTools();
 
@@ -20,6 +15,9 @@ if (OptionsParser.IsHelp(args.ToList()))
 
 var config = OptionsParser.OptionsToToolConfiguration(args.ToList());
 
+ImageNameCompatibilityHelper.PrefixBehaviour = config.NumericPrefixBehaviour;
+ImageNameCompatibilityHelper.SuffixBehaviour = config.NumericSuffixBehaviour;
+
 if (string.IsNullOrWhiteSpace(config.ToolName))
 {
     Console.WriteLine("No tool was provided. Exiting.");
@@ -28,6 +26,7 @@ if (string.IsNullOrWhiteSpace(config.ToolName))
 
 if (!tools.TryGetValue(config.ToolName, out var tool))
 {
+    Console.WriteLine($"The specified tool '{config.ToolName}' does not exist.");
     return;
 }
 

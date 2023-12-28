@@ -1,9 +1,13 @@
 ﻿using System;
+using Mits.Models;
 
 namespace FileRenamer
 {
 	public static class ImageNameCompatibilityHelper
 	{
+        public static ImageNumericBehaviour SuffixBehaviour = ImageNumericBehaviour.Ammend;
+        public static ImageNumericBehaviour PrefixBehaviour = ImageNumericBehaviour.Ammend;
+
         public const string invalidCharacterReplacement = "_";
 
         public static string ConvertToCompatibleName(string imageName, out bool didConvert)
@@ -46,8 +50,8 @@ namespace FileRenamer
                 newName = newName.Remove(0, 1);
             }
 
-            newName = RepairNumberNameStart(newName);
-            newName = RepairNumberNameEnd(newName);
+            newName = RepairNumberNameStart(newName, PrefixBehaviour);
+            newName = RepairNumberNameEnd(newName, SuffixBehaviour);
 
             newName = RemoveIncompatibleCharacters(newName);
 
@@ -96,7 +100,7 @@ namespace FileRenamer
             return newName;
         }
 
-        private static string RepairNumberNameStart(string newName)
+        private static string RepairNumberNameStart(string newName, ImageNumericBehaviour prefixBehaviour)
         {
             var hasNumberStart = false;
             var number = "";
@@ -111,14 +115,21 @@ namespace FileRenamer
             {
                 if (int.TryParse(number, out var numberValue))
                 {
-                    newName = NumberToWords(numberValue) + "_" + newName;
+                    if (prefixBehaviour == ImageNumericBehaviour.Ammend)
+                    {
+                        newName = "n_" + numberValue + "_" + newName;
+                    }
+                    else
+                    {
+                        newName = NumberToWords(numberValue) + "_" + newName;
+                    }
                 }
             }
 
             return newName;
         }
 
-        private static string RepairNumberNameEnd(string newName)
+        private static string RepairNumberNameEnd(string newName, ImageNumericBehaviour numericBehavoiur)
         {
             var hasNumberEnd = false;
             var number = "";
@@ -133,7 +144,14 @@ namespace FileRenamer
             {
                 if (int.TryParse(number, out var numberValue))
                 {
-                    newName += "_" + NumberToWords(numberValue);
+                    if (numericBehavoiur == ImageNumericBehaviour.Ammend)
+                    {
+                        newName += numberValue + "_n";
+                    }
+                    else
+                    {
+                        newName += "_" + NumberToWords(numberValue);
+                    }
                 }
             }
 

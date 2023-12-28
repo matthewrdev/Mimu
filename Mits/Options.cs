@@ -20,6 +20,12 @@ namespace Mits
 		public const string Tool = "--tool";
 
         /// <summary>
+        /// Specifies the tool to run.
+        /// </summary>
+        [Description("Specifies that the tool should overwrite any destination files and not skip them.")]
+        public const string Overwrite = "--overwrite";
+
+        /// <summary>
         /// Specifies the source directory for the tool
         /// </summary>
         [Description("Specifies the source folder or project file for the given tool.")]
@@ -48,6 +54,17 @@ namespace Mits
         /// </summary>
         [Description("Specifies that this run of MITS should only report the changes it would make and not apply them.")]
         public const string DryRun = "--dry-run";
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Description("When an image file name ends with a number value, specifies the behaviour to repair it.\n\n'append': Appends '_n' to the end of the image name (Default).\n'to-word': Converts the number to a word representation.")]
+        public const string NumericSuffixBehaviour = "--numeric-suffix-behaviour";
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Description("When an image file name starts with a number value, specifies the behaviour to repair it.\n\n'append': Prepends 'n_' to the start of the image name (Default).\n'to-word': Converts the number to a word representation.")]
+        public const string NumericPrefixBehaviour = "--numeric-prefix-behaviour";
     }
 }
-

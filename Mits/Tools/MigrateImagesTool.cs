@@ -56,7 +56,8 @@ namespace Mits.Tools
                 foreach (var destination in destinationProjects.Where(d => d.ProjectKind == ProjectKind.Maui))
                 {
                     var filePath = ImagePathHelper.GetFilePath(image, destination);
-                    log.Info(" ===> Output: '" + filePath + "' in " + destination);
+                    var exists = File.Exists(filePath);
+                    log.Info(" ===> Output: '" + filePath + "' in " + destination + (exists ? " (File Already Exists)" : ""));
                 }
             }
 
@@ -66,7 +67,32 @@ namespace Mits.Tools
             }
 
 
+            log.Info(Constants.LineBreak);
             log.Info("Copying image assets...");
+            foreach (var image in sourceImages)
+            {
+                var isExcluded = config.Excluded.Contains(image.Name);
+                if (isExcluded)
+                {
+                    log.Info(" Skipping " + image);
+                    continue;
+                }
+
+                foreach (var destination in destinationProjects.Where(d => d.ProjectKind == ProjectKind.Maui))
+                {
+                    var destinationFilePath = ImagePathHelper.GetFilePath(image, destination);
+                    var exists = File.Exists(destinationFilePath);
+
+                    if (!config.OverWrite && exists)
+                    {
+                        log.Warning($"Skipping {image.FilePath} as its destination file, {destinationFilePath}, already exists.");
+                        continue;
+                    }
+
+                    File.Copy(image.FilePath, destinationFilePath, overwrite:true);
+                    log.Info(" => Copied " + image.FilePath + " to " + destinationFilePath);
+                }
+            }
         }
 
         private bool Validate(ToolConfiguration config)
