@@ -1,12 +1,29 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using System.Diagnostics;
 using FileRenamer;
+using Mimu.Models;
 using Mimu.Utilities;
 
 Console.WriteLine("Hello, World!");
 
 var folderPath = "source path here";
 
+
+var filePath = "Temp";
+var project = new Project(new FileInfo("My/File/Path/Project.csproj"), ProjectKind.Maui);
+var contents = ResourcesHelper.ReadResourceTextContent(typeof(ResourcesHelper).Assembly, "Mimu.Resources.XamlSample.txt");
+
+var references = ImageReferenceFinder.FindStringReferences(contents, filePath, project);
+
+var invertedReferences = references.OrderByDescending(r => r.Span.Start).ToList();
+
+foreach (var reference in invertedReferences)
+{
+    if (reference.HasConversion)
+    {
+        contents = contents.Remove(reference.Span.Start, reference.Span.Length).Insert(reference.Span.Start, reference.CompatImageReference);
+    }
+}
 
 var images = Directory.GetFiles(folderPath, "*.png");
 

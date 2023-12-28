@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.Text;
 using Mimu.Models;
 
 namespace Mimu.Utilities
@@ -11,6 +12,11 @@ namespace Mimu.Utilities
     {
         public const string XamlFileExtension = ".xaml";
         public const string CSharpFileExtension = ".cs";
+
+        private const char EscapeCharacter = '\\';
+        private const char StringLiteralCharacter = '"';
+        private const char StringFormatStartCharacter = '{';
+        private const char StringFormatEndCharacter = '}';
 
         public static readonly IReadOnlyList<string> imageFileExtensions = new List<string>()
         {
@@ -81,8 +87,7 @@ namespace Mimu.Utilities
             Dictionary<string, IReadOnlyList<ImageReference>> references = new Dictionary<string, IReadOnlyList<ImageReference>>();
             foreach (var file in files)
             {
-
-                IReadOnlyList<ImageReference> fileReferences = FindReferences(file);
+                IReadOnlyList<ImageReference> fileReferences = FindReferences(file, project);
 
                 if (fileReferences != null && fileReferences.Any())
                 {
@@ -93,41 +98,22 @@ namespace Mimu.Utilities
             return references;
         }
 
-        public static IReadOnlyList<ImageReference> FindReferences(FileInfo fileInfo)
+        public static IReadOnlyList<ImageReference> FindReferences(FileInfo fileInfo, Project project)
         {
             if (fileInfo is null)
             {
                 throw new ArgumentNullException(nameof(fileInfo));
             }
 
-            switch (fileInfo.Extension)
+            if (project is null)
             {
-                case XamlFileExtension:
-                    return FindXamlReferences(fileInfo);
-                case CSharpFileExtension:
-                    return FindCSharpReferences(fileInfo);
-                default:
-                    return Array.Empty<ImageReference>();
-            }
-        }
-
-
-        public static IReadOnlyList<ImageReference> FindXamlReferences(FileInfo fileInfo)
-        {
-            if (fileInfo is null)
-            {
-                throw new ArgumentNullException(nameof(fileInfo));
+                throw new ArgumentNullException(nameof(project));
             }
 
+            var fileContents = File.ReadAllText(fileInfo.FullName);
 
-        }
+            return FindStringReferences(fileContents, fileInfo.FullName, project);
 
-        public static IReadOnlyList<ImageReference> FindCSharpReferences(FileInfo fileInfo)
-        {
-            if (fileInfo is null)
-            {
-                throw new ArgumentNullException(nameof(fileInfo));
-            }
         }
 
         private enum ParserState
@@ -135,57 +121,188 @@ namespace Mimu.Utilities
             /// <summary>
             /// The scanner is currently looking for " literals
             /// </summary>
-            SearchingForStrings,
+            Scanning,
 
             /// <summary>
             /// The scanner is currently within a string literal and is building a string buffer.
             /// </summary>
-            BuildingStringBuffer,
+            Building,
         }
 
-        public static IReadOnlyList<ImageReference> FindStringReferences(string contents)
+        public static IReadOnlyList<ImageReference> FindStringReferences(string contents, string filePath, Project project)
         {
-            var parserState = ParserState.SearchingForStrings;
+            if (string.IsNullOrEmpty(contents))
+            {
+                throw new ArgumentException($"'{nameof(contents)}' cannot be null or empty.", nameof(contents));
+            }
 
-            var spanStart = 0;
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                throw new ArgumentException($"'{nameof(filePath)}' cannot be null or whitespace.", nameof(filePath));
+            }
+
+            if (project is null)
+            {
+                throw new ArgumentNullException(nameof(project));
+            }
+
+            List<ImageReference> references = new List<ImageReference>();
+
+            var parserState = ParserState.Scanning;
+
             var currentValueBuffer = "";
-
-
 
             for (var i = 0; i < contents.Length; i++)
             {
                 var currentChar = contents[i];
 
-                if (currentChar == '"')
+                bool shouldCloseValue = false;
+                switch (parserState)
                 {
-                    switch (parserState)
-                    {
-                        case ParserState.SearchingForStrings:
-                            break;
-                        case ParserState.BuildingStringBuffer:
-                            break;
-                    }
+                    case ParserState.Scanning:
+                        {
+                            if (currentChar == StringLiteralCharacter)
+                            {
+                                parserState = ParserState.Building;
+                            }
+                        }
+                        break;
+                    case ParserState.Building:
+                        {
+                            if (currentChar == StringLiteralCharacter)
+                            {
+                                shouldCloseValue = CanCloseBuffer(currentValueBuffer);
+                            }
+
+                            if (!shouldCloseValue)
+                            {
+                                currentValueBuffer += currentChar;
+                            }
+                        }
+                        break;
                 }
-                else
+
+                if (shouldCloseValue)
                 {
-                    switch (parserState)
+                    if (TryParseToImageReference(currentValueBuffer, i, filePath, project, out var imageReference))
                     {
-                        case ParserState.SearchingForStrings:
-                            break;
-                        case ParserState.BuildingStringBuffer:
-                            break;
+                        references.Add(imageReference);
                     }
+
+                    parserState = ParserState.Scanning;
+                    currentValueBuffer = string.Empty;
                 }
             }
+
+            return references;
         }
 
-        public static bool TryParseToImageReference(string value, out string imageReference)
+        private static bool CanCloseBuffer(string currentValueBuffer)
+        {
+            if (currentValueBuffer.Length < 1)
+            {
+                return true;
+            }
+
+            var finalChar = currentValueBuffer.Last();
+
+            if (finalChar == EscapeCharacter)
+            {
+                // Was the character before this escape character escaped?
+                if (currentValueBuffer.Length > 1)
+                {
+                    var previousChar = currentValueBuffer[currentValueBuffer.Length - 2];
+                    return previousChar == EscapeCharacter;
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+
+
+        public static bool TryParseToImageReference(string value, int currentSpanEnd, string filePath,  Project project, out ImageReference imageReference)
         {
             imageReference = null;
             if (string.IsNullOrWhiteSpace(value))
             {
                 return false;
             }
+
+            if (!imageFileExtensions.Any(ext => value.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return false;
+            }
+
+            if (ContainsStringFormatting(value))
+            {
+                return false;
+            }
+
+            var span = new TextSpan(currentSpanEnd - value.Length, value.Length);
+
+            imageReference = new ImageReference(value, span, filePath, project.Name);
+
+            return true;
+        }
+
+        private static bool ContainsStringFormatting(string contents)
+        {
+            if (string.IsNullOrWhiteSpace(contents))
+            {
+                return false;
+            }
+
+            var parserState = ParserState.Scanning;
+
+            var currentValueBuffer = "";
+
+            int formattedStringArgumentCount = 0;
+
+            for (var i = 0; i < contents.Length; i++)
+            {
+                var currentChar = contents[i];
+
+                bool shouldCloseValue = false;
+                switch (parserState)
+                {
+                    case ParserState.Scanning:
+                        {
+                            if (currentChar == StringFormatStartCharacter)
+                            {
+                                parserState = ParserState.Building;
+                            }
+                        }
+                        break;
+                    case ParserState.Building:
+                        {
+                            if (currentChar == StringFormatEndCharacter)
+                            {
+                                shouldCloseValue = true;
+                            }
+
+                            if (!shouldCloseValue)
+                            {
+                                currentValueBuffer += currentChar;
+                            }
+                        }
+                        break;
+                }
+
+                if (shouldCloseValue)
+                {
+                    if (int.TryParse(currentValueBuffer, out _))
+                    {
+                        formattedStringArgumentCount++;
+                    }
+                    parserState = ParserState.Scanning;
+                    currentValueBuffer = string.Empty;
+                }
+            }
+
+            return formattedStringArgumentCount > 0;
         }
 
         public static IReadOnlyList<string> GetFileExtensionsForSearch(bool searchCSharp, bool searchXaml)

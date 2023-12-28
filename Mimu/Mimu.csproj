@@ -11,6 +11,8 @@
     <None Remove="Utilities\" />
     <None Remove="Tools\" />
     <None Remove="Resources\" />
+    <None Remove="Resources\CSharpSample.txt" />
+    <None Remove="Resources\XamlSample.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
@@ -20,5 +22,9 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.8.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\CSharpSample.txt" />
+    <EmbeddedResource Include="Resources\XamlSample.txt" />
   </ItemGroup>
 </Project>
