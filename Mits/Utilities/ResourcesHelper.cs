@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Mimu.Utilities
+namespace Mits.Utilities
 {
     /// <summary>
     /// Helper class for locating and reading embedded resources in an assembly.

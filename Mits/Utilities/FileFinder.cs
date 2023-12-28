@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Mimu.Utilities
+namespace Mits.Utilities
 {
     /// <summary>
     /// Searches

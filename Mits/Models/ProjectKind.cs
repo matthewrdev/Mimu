@@ -1,7 +1,7 @@
 ﻿using System;
 
 
-namespace Mimu.Models
+namespace Mits.Models
 {
 	public enum ProjectKind
 	{

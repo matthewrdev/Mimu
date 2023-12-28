@@ -2,7 +2,7 @@
 using FileRenamer;
 using Microsoft.CodeAnalysis.Text;
 
-namespace Mimu.Models
+namespace Mits.Models
 {
 	public class ImageReference
 	{

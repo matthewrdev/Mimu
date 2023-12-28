@@ -1,7 +1,7 @@
 ﻿using System;
-using Mimu.Models;
+using Mits.Models;
 
-namespace Mimu.Tools
+namespace Mits.Tools
 {
 	/// <summary>
 	/// Moves the images from a legacy Xamarin.iOS or Xamarin.Android project into a specific MAUI project.

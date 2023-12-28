@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Mimu.Models;
+using Mits.Models;
 
-namespace Mimu.Utilities
+namespace Mits.Utilities
 {
     /// <summary>
     /// Searches

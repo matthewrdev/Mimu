@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.Text;
-using Mimu.Models;
+using Mits.Models;
 
-namespace Mimu.Utilities
+namespace Mits.Utilities
 {
     /// <summary>
     /// Searches a given project for all known image references.
     /// </summary>
     public static class ImageReferenceFinder
     {
-        public const string XamlFileExtension = ".xaml";
-        public const string CSharpFileExtension = ".cs";
-
         private const char EscapeCharacter = '\\';
         private const char StringLiteralCharacter = '"';
         private const char StringFormatStartCharacter = '{';
         private const char StringFormatEndCharacter = '}';
-
-        public static readonly IReadOnlyList<string> imageFileExtensions = new List<string>()
-        {
-            ".png",
-            ".jpeg",
-            ".jpg",
-            ".gif",
-        };
 
         public static bool IsReferenceFindable(Project project)
         {
@@ -231,7 +220,7 @@ namespace Mimu.Utilities
                 return false;
             }
 
-            if (!imageFileExtensions.Any(ext => value.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)))
+            if (!Constants.ImageFileExtensions.Any(ext => value.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase)))
             {
                 return false;
             }
@@ -311,12 +300,12 @@ namespace Mimu.Utilities
 
             if (searchCSharp)
             {
-                extensions.Add(CSharpFileExtension);
+                extensions.Add(Constants.CSharpFileExtension);
             }
 
             if (searchXaml)
             {
-                extensions.Add(XamlFileExtension);
+                extensions.Add(Constants.XamlFileExtension);
             }
 
             return extensions;

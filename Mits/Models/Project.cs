@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Mimu.Models;
+using Mits.Models;
 
-namespace Mimu.Models
+namespace Mits.Models
 {
 	public class Project
 	{

@@ -1,6 +1,6 @@
-# Mimu
+# Mits
 
-Mimu: **M**aui **I**mage **Mi**gration **U**tility
+Mits: **M**aui **I**mage **Mi**gration **U**tility
 
-Use Mimu to migrate your Xamarin.Forms apps image assets to MAUI app.
+Use Mits to migrate your Xamarin.Forms apps image assets to MAUI app.
 

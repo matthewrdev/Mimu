@@ -1,7 +1,7 @@
 ﻿using System;
-using Mimu.Models;
+using Mits.Models;
 
-namespace Mimu.Tools
+namespace Mits.Tools
 {
 	public class FixImageReferencesInCSharpTool : ITool
     {
