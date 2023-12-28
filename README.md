@@ -52,15 +52,14 @@ When an image file name starts with a number value, specifies the behaviour to r
 'append': Prepends 'n_' to the start of the image name (Default).
 'to-word': Converts the number to a word representation.
 
+
 ----------------------------------------------------------------------------
 Tools:
-fix-image-references
+repair
 Locates all MAUI projects within the given --source folder path, scans for image references within XAML and C# files and then converts those image references into a MAUI compliant image name.
 
 migrate
 Takes the Xamarin.iOS and Xamarin.Android projects within the given --source path (this can be either a folder or a csproj), collects their image assets and then copies them into the 'Resources/Images' folder of any MAUI projects in the --destination folder path or csproj.
 
 rename
-Locates all MAUI projects within the given --source folder path, collects their image assets and then renames them to be compliant with the MAUI image naming restrictions.
-
-```
+Locates all MAUI projects within the given --source folder path, collects their image assets and then renames them to be compliant with the MAUI image naming restrictions.```
