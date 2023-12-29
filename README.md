@@ -2,11 +2,32 @@
 
 Mits: **M**aui **I**mage **T**ools
 
-Use Mits to:
+Migrate your Xamarin.Forms apps image assets to MAUI app:
 
- * Migrate your Xamarin.Forms apps image assets to MAUI app.
- * Ensure that existing image assets comply with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
- * Find image references in XAML and C# and repair the reference to ensure it complies with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
+```
+mits --tool migrate --source /path/to/xamarin/forms/project/folder --destination /path/to/maui/project/folder
+```
+Ensure that existing image assets comply with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
+
+```
+mits --tool rename --source /path/to/maui/project/folder
+```
+
+Find image references in XAML and C# and repair the reference to ensure it complies with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
+
+```
+mits --tool repair --source /path/to/maui/project/folder
+```
+
+Preview the changes a specific tool may make by adding the `--dry-run` flag:
+
+```
+mits --dry-run --tool repair --source /path/to/maui/project/folder
+```
+
+----------------------------
+
+
 
 ----------------------------
 
