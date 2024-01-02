@@ -80,6 +80,10 @@ namespace Mits.Utilities
             Dictionary<string, IReadOnlyList<ImageReference>> references = new Dictionary<string, IReadOnlyList<ImageReference>>();
             foreach (var file in files)
             {
+                if (file.Name == "MasterDetailMenu.cs")
+                {
+
+                }
                 IReadOnlyList<ImageReference> fileReferences = FindReferences(file, project, rules);
 
                 if (fileReferences != null && fileReferences.Any())
@@ -149,9 +153,9 @@ namespace Mits.Utilities
 
             var currentValueBuffer = "";
 
-            for (var i = 0; i < contents.Length; i++)
+            for (var characterIndex = 0; characterIndex < contents.Length; characterIndex++)
             {
-                var currentChar = contents[i];
+                var currentChar = contents[characterIndex];
 
                 bool shouldCloseValue = false;
                 switch (parserState)
@@ -181,7 +185,7 @@ namespace Mits.Utilities
 
                 if (shouldCloseValue)
                 {
-                    if (TryParseToImageReference(currentValueBuffer, i, filePath, project, rules, out var imageReference))
+                    if (TryParseToImageReference(currentValueBuffer, characterIndex, filePath, project, rules, out var imageReference))
                     {
                         references.Add(imageReference);
                     }
@@ -244,7 +248,8 @@ namespace Mits.Utilities
                 return false;
             }
 
-            if (Uri.TryCreate(value, UriKind.RelativeOrAbsolute, out _) && rules.IgnoreUrls)
+            if (Uri.TryCreate(value, UriKind.Absolute, out _)
+                && rules.IgnoreUrls)
             {
                 return false;
             }
@@ -263,54 +268,57 @@ namespace Mits.Utilities
                 return false;
             }
 
-            var parserState = ParserState.Scanning;
+            // Assume any string containing the formatting literals is being constructed for formatting.
+            return contents.Contains(StringFormatStartCharacter) || contents.Contains(StringFormatEndCharacter);
 
-            var currentValueBuffer = "";
+            //var parserState = ParserState.Scanning;
 
-            int formattedStringArgumentCount = 0;
+            //var currentValueBuffer = "";
 
-            for (var i = 0; i < contents.Length; i++)
-            {
-                var currentChar = contents[i];
+            //int formattedStringArgumentCount = 0;
 
-                bool shouldCloseValue = false;
-                switch (parserState)
-                {
-                    case ParserState.Scanning:
-                        {
-                            if (currentChar == StringFormatStartCharacter)
-                            {
-                                parserState = ParserState.Building;
-                            }
-                        }
-                        break;
-                    case ParserState.Building:
-                        {
-                            if (currentChar == StringFormatEndCharacter)
-                            {
-                                shouldCloseValue = true;
-                            }
+            //for (var i = 0; i < contents.Length; i++)
+            //{
+            //    var currentChar = contents[i];
 
-                            if (!shouldCloseValue)
-                            {
-                                currentValueBuffer += currentChar;
-                            }
-                        }
-                        break;
-                }
+            //    bool shouldCloseValue = false;
+            //    switch (parserState)
+            //    {
+            //        case ParserState.Scanning:
+            //            {
+            //                if (currentChar == StringFormatStartCharacter)
+            //                {
+            //                    parserState = ParserState.Building;
+            //                }
+            //            }
+            //            break;
+            //        case ParserState.Building:
+            //            {
+            //                if (currentChar == StringFormatEndCharacter)
+            //                {
+            //                    shouldCloseValue = true;
+            //                }
 
-                if (shouldCloseValue)
-                {
-                    if (int.TryParse(currentValueBuffer, out _))
-                    {
-                        formattedStringArgumentCount++;
-                    }
-                    parserState = ParserState.Scanning;
-                    currentValueBuffer = string.Empty;
-                }
-            }
+            //                if (!shouldCloseValue)
+            //                {
+            //                    currentValueBuffer += currentChar;
+            //                }
+            //            }
+            //            break;
+            //    }
 
-            return formattedStringArgumentCount > 0;
+            //    if (shouldCloseValue)
+            //    {
+            //        if (int.TryParse(currentValueBuffer, out _) || !string.IsNullOrWhiteSpace(currentValueBuffer))
+            //        {
+            //            formattedStringArgumentCount++;
+            //        }
+            //        parserState = ParserState.Scanning;
+            //        currentValueBuffer = string.Empty;
+            //    }
+            //}
+
+            //return formattedStringArgumentCount > 0;
         }
 
         public static IReadOnlyList<string> GetFileExtensionsForSearch(bool searchCSharp, bool searchXaml)

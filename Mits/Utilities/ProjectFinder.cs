@@ -16,6 +16,30 @@ namespace Mits.Utilities
             "obj",
         };
 
+        public static bool IsProjectFile(string filePath, out string reason)
+        {
+            reason = "";
+            if (string.IsNullOrWhiteSpace(filePath))
+            {
+                reason = "No file path was provided";
+                return false;
+            }
+
+            if (!File.Exists(filePath))
+            {
+                reason = $"The file at '{filePath}' does not exist.";
+                return false;
+            }
+
+            if (Path.GetExtension(filePath) != Constants.ProjectFileExtension)
+            {
+                reason = $"The file at '{filePath}' is not a csproj file..";
+                return false;
+            }
+
+            return true;
+        }
+
         public static List<Project> FindAllProjects(string sourcePath)
         {
             List<Project> projects = new List<Project>();

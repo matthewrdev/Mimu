@@ -31,11 +31,17 @@ namespace Mits
         [Description("Specifies the source folder or project file for the given tool.")]
         public const string Source = "--source";
 
+        [Description("Specifies the left folder or project file for the given tool. This flag is an alias for the " + Source + " flag.")]
+        public const string Left = "--left";
+
         /// <summary>
         /// Specifies the output directory or target for the tool
         /// </summary>
         [Description("Specifies the destination folder or project file that the given tool should export to.")]
         public const string Destination = "--destination";
+
+        [Description("Specifies the right folder or project file for the given tool. This flag is an alias for the " + Destination + " flag.")]
+        public const string Right = "--right";
 
         /// <summary>
         /// Specifies the ruleset json file.

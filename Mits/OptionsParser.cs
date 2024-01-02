@@ -33,6 +33,16 @@ namespace Mits
             var ruleSet = LoadRuleSet(ruleSetFile);
             var excludedFiles = LoadExcludedFiles(excluded);
 
+            if (string.IsNullOrWhiteSpace(source))
+            {
+                source = GetOptionValue(Options.Left, args);
+            }
+
+            if (string.IsNullOrWhiteSpace(destination))
+            {
+                destination = GetOptionValue(Options.Right, args);
+            }
+
             return new ToolConfiguration(tool,
                                          source,
                                          destination,

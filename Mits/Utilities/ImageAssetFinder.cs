@@ -3,9 +3,9 @@ using Mits.Models;
 
 namespace Mits.Utilities
 {
-	public static class ImageAssetCollector
+	public static class ImageAssetFinder
 	{
-        public static IReadOnlyList<IImageAsset> CollectImageAssets(IReadOnlyList<Project> projects)
+        public static IReadOnlyList<IImageAsset> FindImageAssets(IReadOnlyList<Project> projects)
         {
             if (projects is null)
             {
@@ -21,7 +21,7 @@ namespace Mits.Utilities
 
             foreach (var project in projects)
             {
-                var images = CollectImageAssets(project);
+                var images = FindImageAssets(project);
                 if (!images.Any())
                 {
                     continue;
@@ -66,7 +66,7 @@ namespace Mits.Utilities
 
         }
 
-        public static IReadOnlyList<IImageAsset> CollectImageAssets(Project project)
+        public static IReadOnlyList<IImageAsset> FindImageAssets(Project project)
 		{
             if (project is null)
             {
@@ -76,18 +76,18 @@ namespace Mits.Utilities
             switch (project.ProjectKind)
             {
                 case ProjectKind.Maui:
-                    return CollectImageAssets_Maui(project);
+                    return FindImageAssets_Maui(project);
                 case ProjectKind.XamariniOS:
-                    return CollectImageAssets_XamariniOS(project);
+                    return FindImageAssets_XamariniOS(project);
                 case ProjectKind.XamarinAndroid:
-                    return CollectImageAssets_XamarinAndroid(project);
+                    return FindImageAssets_XamarinAndroid(project);
                 case ProjectKind.Other:
                 default:
                     return Array.Empty<IImageAsset>();
             }
         }
 
-        private static IReadOnlyList<IImageAsset> CollectImageAssets_XamarinAndroid(Project project)
+        private static IReadOnlyList<IImageAsset> FindImageAssets_XamarinAndroid(Project project)
         {
             if (project is null)
             {
@@ -126,12 +126,12 @@ namespace Mits.Utilities
 
             if (drawableFolders.Any())
             {
-                ScanAndCollectImages(project, drawableFolders, groups);
+                FindImagesInAndroidFolders(project, drawableFolders, groups);
             }
 
             if (mipmapFolders.Any())
             {
-                ScanAndCollectImages(project, mipmapFolders, groups);
+                FindImagesInAndroidFolders(project, mipmapFolders, groups);
             }
 
             foreach (var g in groups)
@@ -149,7 +149,7 @@ namespace Mits.Utilities
             return imageAssets;
         }
 
-        private static void ScanAndCollectImages(Project project, List<string> drawableFolders, Dictionary<string, List<ImageAsset>> groups)
+        private static void FindImagesInAndroidFolders(Project project, List<string> drawableFolders, Dictionary<string, List<ImageAsset>> groups)
         {
             foreach (var folder in drawableFolders)
             {
@@ -169,7 +169,7 @@ namespace Mits.Utilities
             }
         }
 
-        private static IReadOnlyList<IImageAsset> CollectImageAssets_XamariniOS(Project project)
+        private static IReadOnlyList<IImageAsset> FindImageAssets_XamariniOS(Project project)
         {
             if (project is null)
             {
@@ -288,7 +288,7 @@ namespace Mits.Utilities
 
         }
 
-        private static IReadOnlyList<IImageAsset> CollectImageAssets_Maui(Project project)
+        private static IReadOnlyList<IImageAsset> FindImageAssets_Maui(Project project)
         {
             if (project is null)
             {
@@ -297,13 +297,12 @@ namespace Mits.Utilities
 
             var resourcesFolder = Path.Combine(project.Folder, "Resources");
 
-            if (Directory.Exists(resourcesFolder))
+            if (!Directory.Exists(resourcesFolder))
             {
                 return Array.Empty<IImageAsset>();
             }
 
             var images = FileFinder.FindAllFiles(resourcesFolder, Constants.ImageFileExtensions);
-
 
             List<IImageAsset> imageAssets = new List<IImageAsset>();
             Dictionary<string, List<ImageAsset>> groups = new Dictionary<string, List<ImageAsset>>();
@@ -311,11 +310,6 @@ namespace Mits.Utilities
             foreach (var image in images)
             {
                 var imageName = Path.GetFileNameWithoutExtension(image.Name);
-
-                if (imageName.Contains("@"))
-                {
-                    imageName = imageName.Split("@").First();
-                }
 
                 if (!groups.ContainsKey(imageName))
                 {

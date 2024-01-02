@@ -31,10 +31,12 @@ namespace Mits.Models
         public string ToolName { get; }
 
         public string Source { get; }
+        public string Left => Source;
 
-		public string Destination { get; }
+        public string Destination { get; }
+        public string Right => Destination;
 
-		public ImageReferenceConfiguration Ruleset { get; }
+        public ImageReferenceConfiguration Ruleset { get; }
 
 		public ImmutableHashSet<string> Excluded { get; }
 

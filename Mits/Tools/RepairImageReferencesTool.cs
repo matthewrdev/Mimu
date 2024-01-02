@@ -6,11 +6,11 @@ using Mits.Utilities;
 
 namespace Mits.Tools
 {
-	public class FixImageReferencesTool : ITool
+	public class RepairImageReferencesTool : ITool
     {
         private readonly ILogger log = Logger.Create();
 
-        public string Name => "fix-image-references";
+        public string Name => "repair";
 
         public string Help => $"Locates all MAUI projects within the given {Options.Source} folder path, scans for image references within XAML and C# files and then converts those image references into a MAUI compliant image name.";
 
@@ -39,7 +39,6 @@ namespace Mits.Tools
             }
 
             log.Info(Constants.LineBreak);
-
 
             Dictionary<Project, IReadOnlyDictionary<string, IReadOnlyList<ImageReference>>> projectIndexedReferences = new Dictionary<Project, IReadOnlyDictionary<string, IReadOnlyList<ImageReference>>>();
 
@@ -122,17 +121,10 @@ namespace Mits.Tools
         private bool Validate(ToolConfiguration config)
         {
             var source = config.Source;
-            var destination = config.Destination;
-
+            
             if (string.IsNullOrWhiteSpace(source))
             {
                 log.Error("No source provided");
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(destination))
-            {
-                log.Error("No destination provided");
                 return false;
             }
 
@@ -150,22 +142,6 @@ namespace Mits.Tools
             if (sourceFileExist && Path.GetExtension(config.Source) != Constants.ProjectFileExtension)
             {
                 log.Error($"The provided source file '{config.Source}' is not a valid project file. Expected the file extension '{Constants.ProjectFileExtension}'.");
-                return false;
-            }
-
-            var destinationFileExist = File.Exists(config.Destination);
-            var destinationDirectoryExists = Directory.Exists(config.Destination);
-
-            var hasValidDestination = destinationFileExist || destinationDirectoryExists;
-            if (!hasValidDestination)
-            {
-                log.Error($"The provided destination path '{config.Source}' does not exist.");
-                return false;
-            }
-
-            if (destinationFileExist && Path.GetExtension(config.Destination) != Constants.ProjectFileExtension)
-            {
-                log.Error($"The provided destination file '{config.Destination}' is not a valid project file. Expected the file extension '{Constants.ProjectFileExtension}'.");
                 return false;
             }
 

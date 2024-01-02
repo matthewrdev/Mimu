@@ -9,10 +9,11 @@ namespace Mits.Utilities
 		{
 			return new List<ITool>()
 			{
-				new FixImageReferencesTool(),
+				new RepairImageReferencesTool(),
 				new MigrateImagesTool(),
 				new RenameImagesTool(),
-			}.ToDictionary(t => t.Name, t => t);
+                new DeduplicateImagesTools(),
+            }.ToDictionary(t => t.Name, t => t);
 		}
 	}
 }

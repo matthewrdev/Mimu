@@ -43,7 +43,7 @@ namespace Mits.Tools
                 log.Info(" => " + project.ToString() + (isIgnored ? " [IGNORED]" : ""));
             }
 
-            var sourceImages = ImageAssetCollector.CollectImageAssets(sourceProjects);
+            var sourceImages = ImageAssetFinder.FindImageAssets(sourceProjects);
 
             log.Info(Constants.LineBreak);
 
