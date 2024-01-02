@@ -5,24 +5,24 @@ Mits: **M**aui **I**mage **T**ools
 Migrate your Xamarin.Forms apps image assets to MAUI app:
 
 ```
-./mits.sh --project Mits/Mits.csproj --tool migrate --source /path/to/xamarin/forms/project/folder --destination /path/to/maui/project/folder
+./mits.sh --tool migrate --source /path/to/xamarin/forms/project/folder --destination /path/to/maui/project/folder
 ```
 Ensure that existing image assets comply with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
 
 ```
-./mits.sh --project Mits/Mits.csproj --tool rename --source /path/to/maui/project/folder
+./mits.sh --tool rename --source /path/to/maui/project/folder
 ```
 
 Find image references in XAML and C# and repair the reference to ensure it complies with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
 
 ```
-./mits.sh --project Mits/Mits.csproj --tool repair --source /path/to/maui/project/folder
+./mits.sh --tool repair --source /path/to/maui/project/folder
 ```
 
 Find and delete duplicate images between two projects, preserving 
 
 ```
-./mits.sh --project Mits/Mits.csproj --tool repair --source /path/to/maui/project/folder
+./mits.sh --tool deduplicate --left /path/to/maui/project/folder/keep-these-images --right /path/to/maui/project/folder/delete-these-images
 ```
 
 Preview the changes a specific tool may make by adding the `--dry-run` flag:
