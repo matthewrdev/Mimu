@@ -29,6 +29,7 @@ namespace Mits
             var overwrite = args.Contains(Options.Overwrite);
             var suffixBehaviour = GetOptionValue(Options.NumericSuffixBehaviour, args);
             var prefixBehaviour = GetOptionValue(Options.NumericPrefixBehaviour, args);
+            var preserveBehavouir = GetOptionValue(Options.PreserveBehaviour, args);
 
             var ruleSet = LoadRuleSet(ruleSetFile);
             var excludedFiles = LoadExcludedFiles(excluded);
@@ -51,7 +52,8 @@ namespace Mits
                                          isDryRun,
                                          overwrite,
                                          suffixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
-                                         prefixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend);
+                                         prefixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
+                                         prefixBehaviour == "right" ? PreserveBehaviour.Right : PreserveBehaviour.Left);
         }
 
         private static IReadOnlyList<string> LoadExcludedFiles(string excluded)

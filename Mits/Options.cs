@@ -72,5 +72,11 @@ namespace Mits
         /// </summary>
         [Description("When an image file name starts with a number value, specifies the behaviour to repair it.\n\n'append': Prepends 'n_' to the start of the image name (Default).\n'to-word': Converts the number to a word representation.")]
         public const string NumericPrefixBehaviour = "--numeric-prefix-behaviour";
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Description("When de-duplicating images, specifies which project, 'left' or 'right', should have its images preserved. The opposite will have its images deleted. Defaults to 'left'")]
+        public const string PreserveBehaviour = "--preserve";
     }
 }

@@ -26,9 +26,7 @@ namespace Mits.Tools
             var rightProjectImages = ImageAssetFinder.FindImageAssets(rightProject);
             log.Info($"Found {rightProjectImages.Count} images in {rightProject.FilePath}");
 
-            var leftValues = new HashSet<string>(leftProjectImages.Select(i => i.Name).ToList());
-
-            var intersection = rightProjectImages.Where(im => leftValues.Contains(im.Name)).ToList();
+            List<IImageAsset> intersection = GetIntersection(leftProjectImages, rightProjectImages, config.PreserveBehaviour);
 
             log.Info($"Found {intersection.Count} images that exist in both projects.");
 
@@ -36,15 +34,26 @@ namespace Mits.Tools
             {
                 if (config.DryRun)
                 {
-                    log.Info($"The iamge asset '{image.FilePath}' would be deleted.");
+                    log.Info($"The image asset '{image.FilePath}' would be deleted.");
                 }
                 else
                 {
-                    log.Info($"Deleting iamge asset '{image.FilePath}'.");
+                    log.Info($"Deleting image asset '{image.FilePath}'.");
 
                     File.Delete(image.FilePath);
                 }
             }
+        }
+
+        private static List<IImageAsset> GetIntersection(IReadOnlyList<IImageAsset> leftProjectImages, IReadOnlyList<IImageAsset> rightProjectImages, PreserveBehaviour preserveBehaviour)
+        {
+            var keepTheseImages = preserveBehaviour == PreserveBehaviour.Left ? leftProjectImages : rightProjectImages;
+            var deleteTheseImages = preserveBehaviour == PreserveBehaviour.Left ? rightProjectImages : leftProjectImages;
+
+            var toKeep = new HashSet<string>(keepTheseImages.Select(i => i.Name).ToList());
+
+            var toDelete = deleteTheseImages.Where(im => toKeep.Contains(im.Name)).ToList();
+            return toDelete;
         }
 
         private bool Validate(ToolConfiguration config, out Project leftProject, out Project rightProject)

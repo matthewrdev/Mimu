@@ -15,7 +15,8 @@ namespace Mits.Models
                                  bool dryRun,
                                  bool overWrite,
                                  ImageNumericBehaviour numericSufixBehaviour,
-                                 ImageNumericBehaviour numericPrefixBehaviour)
+                                 ImageNumericBehaviour numericPrefixBehaviour,
+                                 PreserveBehaviour preserveBehaviour)
         {
             ToolName = toolName;
             Source = source;
@@ -26,6 +27,7 @@ namespace Mits.Models
             OverWrite = overWrite;
             NumericSuffixBehaviour = numericSufixBehaviour;
             NumericPrefixBehaviour = numericPrefixBehaviour;
+            PreserveBehaviour = preserveBehaviour;
         }
 
         public string ToolName { get; }
@@ -47,6 +49,7 @@ namespace Mits.Models
         public ImageNumericBehaviour NumericSuffixBehaviour { get; }
 
         public ImageNumericBehaviour NumericPrefixBehaviour { get; }
+        public PreserveBehaviour PreserveBehaviour { get; }
     }
 }
 
