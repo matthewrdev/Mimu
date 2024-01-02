@@ -34,9 +34,6 @@ Preview the changes a specific tool may make by adding the `--dry-run` flag:
 ----------------------------
 
 
-
-----------------------------
-
 ### Usage:
 
 ```
@@ -84,6 +81,9 @@ When an image file name starts with a number value, specifies the behaviour to r
 
 'append': Prepends 'n_' to the start of the image name (Default).
 'to-word': Converts the number to a word representation.
+
+--preserve
+When de-duplicating images, specifies which project, 'left' or 'right', should have its images preserved. The opposite will have its images deleted. Defaults to 'left'
 
 
 ----------------------------------------------------------------------------
