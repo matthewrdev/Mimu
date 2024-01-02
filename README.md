@@ -1,6 +1,6 @@
 # Mits
 
-Mits: **M**aui **I**mage **T**ools
+Mits: **M**aui **I**mage **T**ools (Requires dotnet installation)
 
 Migrate your Xamarin.Forms apps image assets to MAUI app:
 
