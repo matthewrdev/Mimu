@@ -24,8 +24,10 @@ namespace Mits.Tools
 
             log.Info(Constants.LineBreak);
 
+            sourceImages = sourceImages.Where(i => string.Compare(i.Name, i.CompatName, StringComparison.Ordinal) != 0).ToList();
+
             log.Info("Discovered the following image assets for renaming:");
-            foreach (var image in sourceImages.Where(i => string.Compare( i.Name, i.CompatName, StringComparison.Ordinal) != 0))
+            foreach (var image in sourceImages)
             {
                 var isExcluded = config.Excluded.Contains(image.Name);
                 log.Info(" => " + (isExcluded ? "[EXCLUDED]" : "") + image + " | CompatName=" + image.CompatName + image.Extension);
@@ -39,7 +41,7 @@ namespace Mits.Tools
 
             log.Info(Constants.LineBreak);
             log.Info("Renaming image assets...");
-            foreach (var image in sourceImages.Where(i => string.Compare(i.Name, i.CompatName, StringComparison.Ordinal) != 0))
+            foreach (var image in sourceImages)
             {
                 var isExcluded = config.Excluded.Contains(image.Name);
                 if (isExcluded)
@@ -51,14 +53,9 @@ namespace Mits.Tools
                 var destinationFilePath = ImagePathHelper.GetFilePath(image, targetProject);
                 var exists = File.Exists(destinationFilePath);
 
-                if (!exists)
-                {
-                    continue;
-                }
-
                 try
                 {
-                    if (!config.OverWrite)
+                    if (!config.OverWrite && exists)
                     {
                         log.Warning($"Skipping {image.FilePath} as its destination file, {destinationFilePath}, already exists.");
                         continue;
@@ -71,10 +68,12 @@ namespace Mits.Tools
                 {
                     if (!config.KeepExistingImages)
                     {
-                        log.Info(" => Deleting source image " + image.FilePath);
-                        File.Delete(image.FilePath);
+                        if (exists)
+                        {
+                            log.Info(" => Deleting source image " + image.FilePath);
+                            File.Delete(image.FilePath);
+                        }
                     }
-
                 }
             }
         }
