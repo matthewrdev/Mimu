@@ -30,6 +30,7 @@ namespace Mits
             var suffixBehaviour = GetOptionValue(Options.NumericSuffixBehaviour, args);
             var prefixBehaviour = GetOptionValue(Options.NumericPrefixBehaviour, args);
             var preserveBehavouir = GetOptionValue(Options.PreserveBehaviour, args);
+            var keepImagesBehavouir = GetOptionValue(Options.KeepExistingImagesBehaviour, args);
 
             var ruleSet = LoadRuleSet(ruleSetFile);
             var excludedFiles = LoadExcludedFiles(excluded);
@@ -44,6 +45,13 @@ namespace Mits
                 destination = GetOptionValue(Options.Right, args);
             }
 
+            bool keepExistingImages = false;
+            if (!string.IsNullOrWhiteSpace(keepImagesBehavouir)
+                && bool.TryParse(keepImagesBehavouir, out var result))
+            {
+                keepExistingImages = result;
+            }
+
             return new ToolConfiguration(tool,
                                          source,
                                          destination,
@@ -53,7 +61,8 @@ namespace Mits
                                          overwrite,
                                          suffixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
                                          prefixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
-                                         preserveBehavouir == "right" ? PreserveBehaviour.Right : PreserveBehaviour.Left);
+                                         preserveBehavouir == "right" ? PreserveBehaviour.Right : PreserveBehaviour.Left,
+                                         keepExistingImages);
         }
 
         private static IReadOnlyList<string> LoadExcludedFiles(string excluded)

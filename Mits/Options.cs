@@ -78,5 +78,11 @@ namespace Mits
         /// </summary>
         [Description("When de-duplicating images, specifies which project, 'left' or 'right', should have its images preserved. The opposite will have its images deleted. Defaults to 'left'")]
         public const string PreserveBehaviour = "--preserve";
+
+        /// <summary>
+        ///
+        /// </summary>
+        [Description("When cleaning up images, specifies if the source images should be retained. Use 'true' to keep the existing images or 'false' to delete them. Defaults to 'false'")]
+        public const string KeepExistingImagesBehaviour = "--keep-existing-images";
     }
 }

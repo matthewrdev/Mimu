@@ -25,7 +25,7 @@ namespace Mits.Tools
             log.Info(Constants.LineBreak);
 
             log.Info("Discovered the following image assets for renaming:");
-            foreach (var image in sourceImages.Where(i => i.Name != i.CompatName))
+            foreach (var image in sourceImages.Where(i => string.Compare( i.Name, i.CompatName, StringComparison.Ordinal) != 0))
             {
                 var isExcluded = config.Excluded.Contains(image.Name);
                 log.Info(" => " + (isExcluded ? "[EXCLUDED]" : "") + image + " | CompatName=" + image.CompatName + image.Extension);
@@ -39,7 +39,7 @@ namespace Mits.Tools
 
             log.Info(Constants.LineBreak);
             log.Info("Renaming image assets...");
-            foreach (var image in sourceImages.Where(i => i.Name != i.CompatName))
+            foreach (var image in sourceImages.Where(i => string.Compare(i.Name, i.CompatName, StringComparison.Ordinal) != 0))
             {
                 var isExcluded = config.Excluded.Contains(image.Name);
                 if (isExcluded)
@@ -51,15 +51,31 @@ namespace Mits.Tools
                 var destinationFilePath = ImagePathHelper.GetFilePath(image, targetProject);
                 var exists = File.Exists(destinationFilePath);
 
-                if (!config.OverWrite && exists)
+                if (!exists)
                 {
-                    log.Warning($"Skipping {image.FilePath} as its destination file, {destinationFilePath}, already exists.");
                     continue;
                 }
 
-                File.Copy(image.FilePath, destinationFilePath, overwrite: true);
-                File.Delete(image.FilePath);
-                log.Info(" => Renamed " + image.FilePath + " to " + destinationFilePath);
+                try
+                {
+                    if (!config.OverWrite)
+                    {
+                        log.Warning($"Skipping {image.FilePath} as its destination file, {destinationFilePath}, already exists.");
+                        continue;
+                    }
+
+                    File.Copy(image.FilePath, destinationFilePath, overwrite: true);
+                    log.Info(" => Renamed " + image.FilePath + " to " + destinationFilePath);
+                }
+                finally
+                {
+                    if (!config.KeepExistingImages)
+                    {
+                        log.Info(" => Deleting source image " + image.FilePath);
+                        File.Delete(image.FilePath);
+                    }
+
+                }
             }
         }
 

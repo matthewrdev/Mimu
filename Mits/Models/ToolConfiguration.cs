@@ -16,7 +16,8 @@ namespace Mits.Models
                                  bool overWrite,
                                  ImageNumericBehaviour numericSufixBehaviour,
                                  ImageNumericBehaviour numericPrefixBehaviour,
-                                 PreserveBehaviour preserveBehaviour)
+                                 PreserveBehaviour preserveBehaviour,
+                                 bool keepExistingImages)
         {
             ToolName = toolName;
             Source = source;
@@ -28,6 +29,7 @@ namespace Mits.Models
             NumericSuffixBehaviour = numericSufixBehaviour;
             NumericPrefixBehaviour = numericPrefixBehaviour;
             PreserveBehaviour = preserveBehaviour;
+            KeepExistingImages = keepExistingImages;
         }
 
         public string ToolName { get; }
@@ -50,6 +52,7 @@ namespace Mits.Models
 
         public ImageNumericBehaviour NumericPrefixBehaviour { get; }
         public PreserveBehaviour PreserveBehaviour { get; }
+        public bool KeepExistingImages { get; }
     }
 }
 
