@@ -53,7 +53,7 @@ namespace Mits
                                          overwrite,
                                          suffixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
                                          prefixBehaviour == "to-word" ? ImageNumericBehaviour.ToWord : ImageNumericBehaviour.Ammend,
-                                         prefixBehaviour == "right" ? PreserveBehaviour.Right : PreserveBehaviour.Left);
+                                         preserveBehavouir == "right" ? PreserveBehaviour.Right : PreserveBehaviour.Left);
         }
 
         private static IReadOnlyList<string> LoadExcludedFiles(string excluded)
