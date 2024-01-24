@@ -19,7 +19,7 @@ Find image references in XAML and C# and repair the reference to ensure it compl
 ./mits.sh --tool repair --source /path/to/maui/project/folder
 ```
 
-Find and delete duplicate images between two projects, preserving 
+Find and delete duplicate images between two projects, preserving the images in the `--left` MAUI project:
 
 ```
 ./mits.sh --tool deduplicate --left /path/to/maui/project/folder/keep-these-images --right /path/to/maui/project/folder/delete-these-images
