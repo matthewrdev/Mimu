@@ -61,6 +61,12 @@ namespace Mits.Tools
                         continue;
                     }
 
+                    if (!File.Exists(image.FilePath))
+                    {
+                        log.Error($"The source image '{image.FilePath}' does not exist and will not be renamed.");
+                        continue;
+                    }
+
                     File.Copy(image.FilePath, destinationFilePath, overwrite: true);
                     log.Info(" => Renamed " + image.FilePath + " to " + destinationFilePath);
                 }

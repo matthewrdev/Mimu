@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Text.RegularExpressions;
+using Mits.Logging;
 using Mits.Models;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Mits.Utilities
 {
 	public static class ImageAssetFinder
-	{
+    {
+        private static readonly ILogger log = Logger.Create();
+
         public static IReadOnlyList<IImageAsset> FindImageAssets(IReadOnlyList<Project> projects)
         {
             if (projects is null)
@@ -159,12 +164,22 @@ namespace Mits.Utilities
                 {
                     var imageName = Path.GetFileNameWithoutExtension(image.Name);
 
-                    if (!groups.ContainsKey(imageName))
+                    try
                     {
-                        groups[imageName] = new List<ImageAsset>();
-                    }
+                        var asset = new ImageAsset(imageName, image.FullName, image.Extension, project);
 
-                    groups[imageName].Add(new ImageAsset(imageName, image.FullName, image.Extension, project));
+                        if (!groups.ContainsKey(imageName))
+                        {
+                            groups[imageName] = new List<ImageAsset>();
+                        }
+
+                        groups[imageName].Add(asset);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error($"An error occured while including the image '{image.FullName}'. This image will be skipped.");
+                        log.Error(ex.GetType() + ": " + ex.Message);
+                    }
                 }
             }
         }
@@ -208,12 +223,22 @@ namespace Mits.Utilities
                         imageName = imageName.Split("@").First();
                     }
 
-                    if (!groups.ContainsKey(imageName))
+                    try
                     {
-                        groups[imageName] = new List<ImageAsset>();
-                    }
+                        var asset = new ImageAsset(imageName, image.FullName, image.Extension, project);
 
-                    groups[imageName].Add(new ImageAsset(imageName, image.FullName, image.Extension, project));
+                        if (!groups.ContainsKey(imageName))
+                        {
+                            groups[imageName] = new List<ImageAsset>();
+                        }
+
+                        groups[imageName].Add(asset);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error($"An error occured while including the image '{image.FullName}'. This image will be skipped.");
+                        log.Error(ex.GetType() + ": " + ex.Message);
+                    }
                 }
 
                 foreach (var g in groups)
@@ -280,7 +305,20 @@ namespace Mits.Utilities
                 return null;
             }
 
-            var assets = images.Select(i => new ImageAsset(Path.GetFileNameWithoutExtension(i.Name), i.FullName, i.Extension, project)).ToList();
+            var assets = images.Select(i =>
+            {
+                try
+                {
+                    return new ImageAsset(i.Name, i.FullName, i.Extension, project);
+                }
+                catch (Exception ex)
+                {
+                    log.Error($"An error occured while including the image '{i.FullName}'. This image will be skipped.");
+                    log.Error(ex.GetType() + ": " + ex.Message);
+                }
+                return null;
+            }).Where(a => a != null)
+              .ToList();
 
             return new ImageAssetGroup(imageName,
                                        assets);
@@ -311,12 +349,23 @@ namespace Mits.Utilities
             {
                 var imageName = Path.GetFileNameWithoutExtension(image.Name);
 
-                if (!groups.ContainsKey(imageName))
-                {
-                    groups[imageName] = new List<ImageAsset>();
-                }
 
-                groups[imageName].Add(new ImageAsset(imageName, image.FullName, image.Extension, project));
+                try
+                {
+                    var asset = new ImageAsset(imageName, image.FullName, image.Extension, project);
+
+                    if (!groups.ContainsKey(imageName))
+                    {
+                        groups[imageName] = new List<ImageAsset>();
+                    }
+
+                    groups[imageName].Add(asset);
+                }
+                catch (Exception ex)
+                {
+                    log.Error($"An error occured while including the image '{image.FullName}'. This image will be skipped.");
+                    log.Error(ex.GetType() + ": " + ex.Message);
+                }
             }
 
             foreach (var g in groups)

@@ -23,6 +23,11 @@ namespace Mits.Utilities
             {
                 using (var bitmap = SKBitmap.Decode(stream))
                 {
+                    if (bitmap is null)
+                    {
+                        throw new InvalidDataException($"SkiaSharp was unable to decode the image contents for {filePath}.");
+                    }
+
                     return new Size(bitmap.Width, bitmap.Height);
                 }
             }

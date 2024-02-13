@@ -81,12 +81,25 @@ namespace Mits.Tools
                 foreach (var destination in destinationProjects.Where(d => d.ProjectKind == ProjectKind.Maui))
                 {
                     var destinationFilePath = ImagePathHelper.GetFilePath(image, destination);
+                    var destinationFileInfo = new FileInfo(destinationFilePath);
                     var exists = File.Exists(destinationFilePath);
 
                     if (!config.OverWrite && exists)
                     {
                         log.Warning($"Skipping {image.FilePath} as its destination file, {destinationFilePath}, already exists.");
                         continue;
+                    }
+
+                    if (!File.Exists(image.FilePath))
+                    {
+                        log.Error($"The source image '{image.FilePath}' does not exist and will not be copied.");
+                        continue;
+                    }
+
+                    if (!Directory.Exists(destinationFileInfo.Directory.FullName))
+                    {
+                        log.Info(" => Creating output directory:  " + destinationFileInfo.Directory.FullName);
+                        Directory.CreateDirectory(destinationFileInfo.Directory.FullName);
                     }
 
                     File.Copy(image.FilePath, destinationFilePath, overwrite:true);
