@@ -7,7 +7,7 @@ Migrate your Xamarin.Forms apps image assets to MAUI app:
 ```
 ./mits.sh --tool migrate --source /path/to/xamarin/forms/project/folder --destination /path/to/maui/project/folder
 ```
-Ensure that existing image assets comply with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
+Ensure that existing image assets in a MAUI project comply with [naming restrictions](https://learn.microsoft.com/en-us/dotnet/maui/user-interface/controls/image?view=net-maui-8.0#load-a-local-image).
 
 ```
 ./mits.sh --tool rename --source /path/to/maui/project/folder
@@ -19,7 +19,7 @@ Find image references in XAML and C# and repair the reference to ensure it compl
 ./mits.sh --tool repair --source /path/to/maui/project/folder
 ```
 
-Find and delete duplicate images between two projects, preserving 
+Find and delete duplicate images between two projects, preserving the images in the `--left` MAUI project:
 
 ```
 ./mits.sh --tool deduplicate --left /path/to/maui/project/folder/keep-these-images --right /path/to/maui/project/folder/delete-these-images
